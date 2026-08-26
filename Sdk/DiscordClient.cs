@@ -12,6 +12,7 @@ public class DiscordClient : IDisposable
 	private DiscordClientAuthorizationCallback? _nativeAuthorizeCallback;
 	private DiscordClientOnStatusChanged? _nativeStatusChangedCallback;
 	private DiscordClientTokenExchangeCallback? _nativeExchangeCallback;
+	private DiscordClientUpdateTokenCallback? _nativeUpdateTokenCallback;
 
 	public DiscordClient() => NativeDiscordClientLifecycleMethods.Discord_Client_Init(ref _native);
 
@@ -19,6 +20,12 @@ public class DiscordClient : IDisposable
 	{
 		ObjectDisposedException.ThrowIf(_disposed, this);
 		NativeDiscordClientLifecycleMethods.Discord_Client_SetApplicationId(ref _native, applicationId);
+	}
+
+	public void Connect()
+	{
+		ObjectDisposedException.ThrowIf(_disposed, this);
+		NativeDiscordClientLifecycleMethods.Discord_Client_Connect(ref _native);
 	}
 
 	public void Authorize(AuthorizationArgs args, AuthorizationCallback callback)
@@ -30,6 +37,23 @@ public class DiscordClient : IDisposable
 			callback(new ClientResult(result), NativeString.Read(code), NativeString.Read(redirectUri));
 
 		NativeDiscordClientAuthorizationMethods.Discord_Client_Authorize(ref _native, ref args.NativeValue, _nativeAuthorizeCallback, null!, nint.Zero);
+	}
+
+	public void UpdateToken(AuthorizationTokenType tokenType, string accessToken, ClientUpdateTokenCallback callback)
+	{
+		ObjectDisposedException.ThrowIf(_disposed, this);
+		ArgumentNullException.ThrowIfNull(accessToken);
+
+		_nativeUpdateTokenCallback = (ref result, _) => callback(new ClientResult(result));
+
+		NativeDiscordClientAuthorizationMethods.Discord_Client_UpdateToken(
+			ref _native, 
+			(DiscordAuthorizationTokenType)tokenType, 
+			NativeString.Create(accessToken, out var accessTokenAllocation),
+			_nativeUpdateTokenCallback,
+			null!,
+			nint.Zero
+		);
 	}
 
 	public void RunCallBacks()

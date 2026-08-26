@@ -4,6 +4,8 @@ public delegate void AuthorizationCallback(ClientResult result, string code, str
 
 public delegate void ClientTokenExchangeCallback(ClientResult result, string accessToken, string refreshToken, AuthorizationTokenType tokenType, int expiresIn, string scope);
 
+public delegate void ClientUpdateTokenCallback(ClientResult result);
+
 public enum AuthorizationTokenType
 {
     User = 0,
