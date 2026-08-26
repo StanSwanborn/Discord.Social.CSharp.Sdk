@@ -112,6 +112,39 @@ public class DiscordClient : IDisposable
 		}
 	}
 
+	public void RefreshToken(ulong applicationId, string refreshToken, ClientTokenExchangeCallback callback)
+	{
+		ObjectDisposedException.ThrowIf(_disposed, this);
+		ArgumentException.ThrowIfNullOrWhiteSpace(refreshToken);
+
+		var nativeRefreshToken = NativeString.Create(refreshToken, out var refreshTokenAllocation);
+		_nativeExchangeCallback = (ref result, accessToken, returnedRefreshToken, tokenType, expiresIn, scope, _) =>
+			callback(
+				new ClientResult(result),
+				NativeString.Read(accessToken),
+				NativeString.Read(returnedRefreshToken),
+				(AuthorizationTokenType)tokenType,
+				expiresIn,
+				NativeString.Read(scope)
+			);
+
+		try
+		{
+			NativeDiscordClientAuthorizationMethods.Discord_Client_RefreshToken(
+				ref _native,
+				applicationId,
+				nativeRefreshToken,
+				_nativeExchangeCallback,
+				null!,
+				nint.Zero
+			);
+		}
+		finally
+		{
+			NativeString.Free(refreshTokenAllocation);
+		}
+	}
+
 	public void AddLogCallback(LogCallback callback, LoggingSeverity severity = LoggingSeverity.Info)
 	{
 		ObjectDisposedException.ThrowIf(_disposed, this);
