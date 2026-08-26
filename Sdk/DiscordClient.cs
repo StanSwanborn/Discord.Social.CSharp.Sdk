@@ -1,6 +1,7 @@
 ﻿using Discord.Social.CSharp.Sdk.Authorization;
 using Discord.Social.CSharp.Sdk.Logging;
 using Discord.Social.CSharp.Native.Sdk;
+using Discord.Social.CSharp.Sdk.RichPresence;
 
 namespace Discord.Social.CSharp.Sdk;
 
@@ -8,6 +9,7 @@ public class DiscordClient : IDisposable
 {
 	private DiscordClientNative _native;
 	private bool _disposed;
+	private DiscordClientUpdateRichPresenceCallback? _nativeUpdateRichPresenceCallback;
 	private DiscordClientLogCallback? _nativeLogCallback;
 	private DiscordClientAuthorizationCallback? _nativeAuthorizeCallback;
 	private DiscordClientOnStatusChanged? _nativeStatusChangedCallback;
@@ -26,6 +28,23 @@ public class DiscordClient : IDisposable
 	{
 		ObjectDisposedException.ThrowIf(_disposed, this);
 		NativeDiscordClientLifecycleMethods.Discord_Client_Connect(ref _native);
+	}
+
+	public void UpdateRichPresence(Activity activity, ClientUpdateRichPresenceCallback callback)
+	{
+		ObjectDisposedException.ThrowIf(_disposed, this);
+		ArgumentNullException.ThrowIfNull(activity);
+		ArgumentNullException.ThrowIfNull(callback);
+
+		_nativeUpdateRichPresenceCallback = (ref result, _) => callback(new ClientResult(result));
+
+		NativeDiscordClientPresenceMethods.Discord_Client_UpdateRichPresence(
+			ref _native,
+			ref activity.NativeValue,
+			_nativeUpdateRichPresenceCallback,
+			null!,
+			nint.Zero
+		);
 	}
 
 	public void Authorize(AuthorizationArgs args, AuthorizationCallback callback)
@@ -181,20 +200,20 @@ public class DiscordClient : IDisposable
 		);
 	}
 
-	public void TryStart()
-	{
-		ObjectDisposedException.ThrowIf(_disposed, this);
-		NativeDiscordClientLifecycleMethods.Discord_Client_Connect(ref _native);
-	}
-
 	public void Dispose()
 	{
 		if (_disposed)
 			return;
 
 		NativeDiscordClientLifecycleMethods.Discord_Client_Drop(ref _native);
-		_nativeLogCallback = null;
-		_nativeStatusChangedCallback = null;
+
+		_nativeUpdateRichPresenceCallback 	= null;
+		_nativeLogCallback 					= null;
+		_nativeStatusChangedCallback 		= null;
+		_nativeAuthorizeCallback 			= null;
+		_nativeExchangeCallback 			= null;
+		_nativeUpdateTokenCallback 			= null;
+
 		_disposed = true;
 		GC.SuppressFinalize(this);
 	}

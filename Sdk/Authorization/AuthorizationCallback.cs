@@ -1,5 +1,7 @@
 using Discord.Social.CSharp.Native.Sdk;
 
+namespace Discord.Social.CSharp.Sdk.Authorization;
+
 public delegate void AuthorizationCallback(ClientResult result, string code, string redirectUri);
 
 public delegate void ClientTokenExchangeCallback(ClientResult result, string accessToken, string refreshToken, AuthorizationTokenType tokenType, int expiresIn, string scope);
