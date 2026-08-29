@@ -25,9 +25,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Pack
-        run: dotnet pack Discord.Social.CSharp.csproj \
-          --configuration Release \
-          --output ./nupkg
+        run: dotnet pack Discord.Social.CSharp.csproj --configuration Release --output ./nupkg
 
       # Exchange GitHub OIDC token for a temporary NuGet API key
       - name: NuGet login
