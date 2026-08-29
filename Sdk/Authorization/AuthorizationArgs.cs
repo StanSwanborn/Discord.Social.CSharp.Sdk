@@ -161,8 +161,6 @@ public sealed class AuthorizationArgs : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    ~AuthorizationArgs() => Dispose();
-
     internal ref DiscordAuthorizationArgs NativeValue
     {
         get

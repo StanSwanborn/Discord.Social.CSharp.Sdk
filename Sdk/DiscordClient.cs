@@ -2,6 +2,7 @@
 using Discord.Social.CSharp.Sdk.Logging;
 using Discord.Social.CSharp.Native.Sdk;
 using Discord.Social.CSharp.Sdk.RichPresence;
+using Discord.Social.CSharp.Sdk.Relationships;
 
 namespace Discord.Social.CSharp.Sdk;
 
@@ -32,16 +33,25 @@ public class DiscordClient : IDisposable
 
 	public void UpdateRichPresence(Activity activity, ClientUpdateRichPresenceCallback callback)
 	{
+		void NativeCallback(ref DiscordClientResultNative clientResult, nint userData)
+		{
+			var result = new ClientResult(clientResult);
+			if(result.Successful)
+				Console.WriteLine("[Discord.Social.CSharp.Sdk] => Rich Presence Updated Successfully");
+			else
+				Console.WriteLine($"[Discord.Social.CSharp.Sdk] => Rich Presence Update Failed: {result.Error}");
+
+			callback(result);
+		}
+
 		ObjectDisposedException.ThrowIf(_disposed, this);
 		ArgumentNullException.ThrowIfNull(activity);
 		ArgumentNullException.ThrowIfNull(callback);
 
-		_nativeUpdateRichPresenceCallback = (ref result, _) => callback(new ClientResult(result));
-
 		NativeDiscordClientPresenceMethods.Discord_Client_UpdateRichPresence(
 			ref _native,
 			ref activity.NativeValue,
-			_nativeUpdateRichPresenceCallback,
+			NativeCallback,
 			null!,
 			nint.Zero
 		);
@@ -129,6 +139,18 @@ public class DiscordClient : IDisposable
 			NativeString.Free(codeVerifierAllocation);
 			NativeString.Free(redirectUriAllocation);
 		}
+	}
+
+	public RelationshipHandleSpan GetRelationships()
+	{
+		var nativeHandleSpan = new DiscordRelationshipHandleSpan();
+		NativeDiscordClientRelationshipsMethods.Discord_Client_GetRelationships(ref _native, ref nativeHandleSpan);
+
+		return new()
+		{
+			NativeValue = nativeHandleSpan,
+			Size = nativeHandleSpan.Size
+		};
 	}
 
 	public void RefreshToken(ulong applicationId, string refreshToken, ClientTokenExchangeCallback callback)
