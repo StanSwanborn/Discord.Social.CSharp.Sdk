@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
 
     <PackageId>Discord.Social.CSharp.Sdk</PackageId>
-    <PackageVersion>0.1.0-alpha.1</PackageVersion>
+    <Version>0.1.0-alpha.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
