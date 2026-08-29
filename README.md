@@ -69,24 +69,46 @@ class Program
     {
         using var client = new DiscordClient();
 
-        // Set your application id (your Discord application/client id)
-        client.SetApplicationId(123456789012345678); // replace with your app id
+        // Set Discord ApplicationId
+        client.SetApplicationId(discordOptions.Value.ApplicationId);
 
-        // Connect to Discord
-        client.Connect();
+        // Setup logging
+        client.AddLogCallback((message, severity) =>
+            Console.WriteLine($"[{severity}] {message}"), LoggingSeverity.Info
+        );
+        
+        client.SetStatusChangedCallback((status, error, errorDetail) =>
+            Console.WriteLine($"Status changed: {status}, Error: {error}, Detail: {errorDetail}")
+        );
 
-        // Prepare activity/rich presence
-        var activity = new Activity();
-        activity.SetDetails("Playing My Game");
-        activity.SetState("In Match");
+        Console.WriteLine("Attempting OAuth authorization on Discord account...");
 
-        client.UpdateRichPresence(activity, result =>
+        var codeVerifier    = client.CreateAuthorizationCodeVerifier();
+        var authArgs        = new AuthorizationArgs();
+
+        authArgs.SetClientId(discordOptions.ApplicationId);
+        authArgs.SetScopes(DiscordClientExtensions.GetDefaultPresenceScopes());
+        authArgs.SetCodeChallenge(codeVerifier.Challenge());
+
+        client.Authorize(authArgs, (result, code, redirectUri) =>
         {
-            if (result.Successful)
-                Console.WriteLine("Rich Presence updated successfully");
-            else
-                Console.WriteLine($"Failed to update rich presence: {result.Error}");
+            using (result) if (!result.Successful) throw new OAuthFailedException();
+
+            # Successfully authorized with OAuth against Discord account, retrieve Access Token.
+            client.GetToken(discordOptions.ApplicationId, code, codeVerifier.Verifier, redirectUri, (result, accessToken, refreshToken, tokenType, expiresIn, scope) =>
+            {
+                using (result) if (!result.Successful || string.IsNullOrWhiteSpace(accessToken)) throw new OAuthFailedException();
+
+                // Successfully retrieved token, update into local client
+                client.UpdateToken(token.TokenType, token.AccessToken, (result) =>
+                {
+                    Console.WriteLine("Successfully updated token! ✓");
+                });
+            });
         });
+
+        // We have authorized, updated the access token and can now connect to the client.
+        client.Connect();
 
         // In your application's main loop call RunCallBacks regularly
         while (true)
