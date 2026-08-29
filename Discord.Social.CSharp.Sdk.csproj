@@ -11,9 +11,10 @@
 
   <ItemGroup>
     <None Include="native/linux/libdiscord_partner_sdk.so"
-      Link="libdiscord_partner_sdk.so"
+          Pack="true"
+          PackagePath="runtimes/linux-x64/native/"
           CopyToOutputDirectory="PreserveNewest"
           CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
-
+  
 </Project>
