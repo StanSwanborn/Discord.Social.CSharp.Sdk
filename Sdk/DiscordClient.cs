@@ -1,8 +1,8 @@
-﻿using Discord.Social.CSharp.Sdk.Authorization;
+﻿using Discord.Social.CSharp.Sdk.Relationships;
+using Discord.Social.CSharp.Sdk.Authorization;
+using Discord.Social.CSharp.Sdk.RichPresence;
 using Discord.Social.CSharp.Sdk.Logging;
 using Discord.Social.CSharp.Native.Sdk;
-using Discord.Social.CSharp.Sdk.RichPresence;
-using Discord.Social.CSharp.Sdk.Relationships;
 
 namespace Discord.Social.CSharp.Sdk;
 
@@ -10,7 +10,6 @@ public class DiscordClient : IDisposable
 {
 	private DiscordClientNative _native;
 	private bool _disposed;
-	private DiscordClientUpdateRichPresenceCallback? _nativeUpdateRichPresenceCallback;
 	private DiscordClientLogCallback? _nativeLogCallback;
 	private DiscordClientAuthorizationCallback? _nativeAuthorizeCallback;
 	private DiscordClientOnStatusChanged? _nativeStatusChangedCallback;
@@ -229,7 +228,6 @@ public class DiscordClient : IDisposable
 
 		NativeDiscordClientLifecycleMethods.Discord_Client_Drop(ref _native);
 
-		_nativeUpdateRichPresenceCallback 	= null;
 		_nativeLogCallback 					= null;
 		_nativeStatusChangedCallback 		= null;
 		_nativeAuthorizeCallback 			= null;

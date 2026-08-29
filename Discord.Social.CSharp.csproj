@@ -4,6 +4,9 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <PackageId>Discord.Social.CSharp</PackageId>
+    <PackageVersion>0.1.0-alpha.1</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
