@@ -21,7 +21,7 @@ jobs:
         uses: brandedoutcast/publish-nuget@v2
         with:
           # Filepath of the project to be packaged, relative to root of repository
-          PROJECT_FILE_PATH: Discord.Social.CSharp.csproj
+          PROJECT_FILE_PATH: Discord.Social.CSharp.Sdk.csproj
 
           # Configuration to build and package
           # BUILD_CONFIGURATION: Release
