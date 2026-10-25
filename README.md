@@ -150,8 +150,6 @@ If you target other platforms, provide the corresponding native library for each
 - Add the native library to a folder and set the appropriate environment variable or use the OS-specific loader path.
 - On Windows the native DLL name will likely differ (e.g. `discord_partner_sdk.dll`) — ensure you provide the correct file and update the project packaging if you want to ship multiple platform variants.
 
-Important: The included native library is platform-specific. Check the upstream Discord partner SDK licensing and distribution restrictions before redistributing the native binaries.
-
 ## API surface (high level)
 
 The primary entrypoint is `DiscordClient` in `Sdk/DiscordClient.cs` which exposes methods such as:
@@ -173,8 +171,6 @@ Contributions are welcome. A few guidelines:
 - Add tests or examples for new functionality when appropriate.
 - If you modify or redistribute native binaries, include details about where you obtained them and ensure you comply with their license.
 
-If you'd like, I can open a CONTRIBUTING.md file with a suggested template and PR checklist.
-
 ## License
 
 There is no LICENSE file in the repository at the time of this edit. Please add an explicit license (MIT, Apache-2.0, or another license) so consumers know how they can use this code. If you want, I can add a permissive MIT LICENSE file as a PR or commit — tell me which license you prefer.
@@ -183,14 +179,3 @@ There is no LICENSE file in the repository at the time of this edit. Please add 
 
 - Project: https://github.com/StanSwanborn/Discord.Social.CSharp.Sdk
 - The project was created to expose the Discord Partner (Social) SDK to .NET.
-
-Notes from code search: I inspected several source files for the README (e.g., Sdk/DiscordClient.cs, Native.Sdk/*) to collect API and native-dependency details. Code search results may be incomplete — view the repository search page for more files: https://github.com/StanSwanborn/Discord.Social.CSharp.Sdk/search
-
----
-
-If you'd like, I can also:
-
-- Add a dedicated NuGet-specific README (if you want different content in the package than in the repo),
-- Add a LICENSE file (MIT/Apache),
-- Add a GitHub Actions workflow to build and publish a NuGet package, or
-- Create example projects showing complete authorization flows and platform packaging.
