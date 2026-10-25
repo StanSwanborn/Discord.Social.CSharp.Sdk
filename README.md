@@ -173,7 +173,7 @@ Contributions are welcome. A few guidelines:
 
 ## License
 
-There is no LICENSE file in the repository at the time of this edit. Please add an explicit license (MIT, Apache-2.0, or another license) so consumers know how they can use this code. If you want, I can add a permissive MIT LICENSE file as a PR or commit — tell me which license you prefer.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file in the repository for the full text.
 
 ## Acknowledgements & links
 
